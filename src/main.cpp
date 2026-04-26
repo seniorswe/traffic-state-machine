@@ -2,6 +2,7 @@
 
 #include "Logger.h"
 #include "TrafficLightController.h"
+#include <iostream>
 
 int main() {
     Logger logger;
@@ -9,9 +10,22 @@ int main() {
 
     logger.info("Started Traffic Controller!");
 
-    trafficController.tick(60);
-    trafficController.processEvent(TrafficLightEvent::PEDESTRIAN_BUTTON_PRESSED);
-    trafficController.tick(20);
+    while (true) {
+        int userInput;
 
-    return 0;
+        std::cout << "Enter 1 for pedestrian crosswalk. \n";
+        std::cout << "Enter 1 for pedestrian crosswalk. \n";
+        std::cout << "Input: ";
+        
+        std::cin >> userInput;
+
+        switch(userInput) {
+            case (0):
+                logger.info("INFO | Traffic Controller Stopped!");
+                return 0;
+            case(1):
+                logger.info("INFO | Pedestrian button manually triggered");
+                trafficController.processEvent(TrafficLightEvent::PEDESTRIAN_BUTTON_PRESSED);
+        }
+    }
 }

@@ -1,6 +1,9 @@
 // src/TrafficLightController.cpp
 
+#include "Logger.h"
 #include "TrafficLightController.h"
+
+Logger logger;
 
 TrafficLightController::TrafficLightController()
     :   state(TrafficLightState::RED),
@@ -23,38 +26,47 @@ TrafficLightState TrafficLightController::getState() const {
 
 void TrafficLightController::processEvent(TrafficLightEvent event) {
     if (event == TrafficLightEvent::ERROR_ACTIVE) {
+        logger.error("Event error");
         isFault = true;
         setState(TrafficLightState::ERROR);
         return;
     }
 
     if (event == TrafficLightEvent::ERROR_CLEARED) {
+        logger.info("Event error cleared");
         isFault = false;
         setState(TrafficLightState::RED);
         return;
     }
 
     if (event == TrafficLightEvent::PEDESTRIAN_BUTTON_PRESSED) {
+        logger.info("Pedestrian button pressed");
         if (state == TrafficLightState::GREEN && !pedestrianButtonPressed) {
             tick(TrafficConstants::PEDESTRIAN_REDUCTION);
+            logger.info("Pedestrian time reduction triggered");
         }
         pedestrianButtonPressed = true;
         return;
     }
 
     if (event == TrafficLightEvent::TIMER_EXPIRED) {
+        logger.info("Time has expired");
         pedestrianButtonPressed = false;
         switch (state) {
             case TrafficLightState::RED:
+                logger.info("Red to green light transition");
                 setState(TrafficLightState::GREEN);
                 break;
             case TrafficLightState::YELLOW:
+                logger.info("Yellow to red light transition");
                 setState(TrafficLightState::RED);
                 break;
             case TrafficLightState::GREEN:
+                logger.info("Green to yellow light transition");
                 setState(TrafficLightState::YELLOW);
                 break;
             case TrafficLightState::ERROR:
+                logger.error("Traffic light has entered an error state");
                 break;
         }
     }
