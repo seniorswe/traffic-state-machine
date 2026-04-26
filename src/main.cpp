@@ -3,6 +3,8 @@
 #include "Logger.h"
 #include "TrafficLightController.h"
 #include <iostream>
+#include <chrono>
+#include <thread>
 
 int main() {
     Logger logger;
@@ -11,9 +13,12 @@ int main() {
     logger.info("Started Traffic Controller!");
 
     while (true) {
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+        trafficController.tick(1);
+
         int userInput;
 
-        std::cout << "Enter 1 for pedestrian crosswalk. \n";
+        std::cout << "Enter 0 to stop the system. \n";
         std::cout << "Enter 1 for pedestrian crosswalk. \n";
         std::cout << "Input: ";
         

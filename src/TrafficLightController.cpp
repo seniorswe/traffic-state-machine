@@ -82,6 +82,9 @@ void TrafficLightController::tick(int time = 0) {
     if (remainingLightTime <= 0) {
         processEvent(TrafficLightEvent::TIMER_EXPIRED);
     }
+
+    logger.info("Current State: " + stateToString(getState()));
+    logger.info("Time Remaining: " + std::to_string(getRemainingTime()));
 }
 
 void TrafficLightController::setState(TrafficLightState newState) {
@@ -95,5 +98,18 @@ void TrafficLightController::setState(TrafficLightState newState) {
         remainingLightTime = greenLightTime;
     } else if (state == TrafficLightState::ERROR) {
         remainingLightTime = 0;
+    }
+}
+
+std::string TrafficLightController::stateToString(TrafficLightState state) {
+    switch (state) {
+        case TrafficLightState::RED:
+            return "RED";
+        case TrafficLightState::YELLOW:
+            return "YELLOW";
+        case TrafficLightState::GREEN:
+            return "GREEN";
+        case TrafficLightState::ERROR:
+            return "ERROR";
     }
 }
