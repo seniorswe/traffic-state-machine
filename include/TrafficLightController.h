@@ -4,29 +4,32 @@
 #include "TrafficLightEvent.h"
 #include "TrafficLightState.h"
 
+namespace TrafficConstants {
+    constexpr int RED_TIME = 60;
+    constexpr int YELLOW_TIME = 5;
+    constexpr int GREEN_TIME = 120;
+    constexpr int PEDESTRIAN_REDUCTION = 30;
+}
+
 class TrafficLightController {
     public:
         TrafficLightController();
 
-        void processEvent(TrafficLightEvent event);
-
         TrafficLightState getState() const;
+
+        void processEvent(TrafficLightEvent event);
+        void tick(int time);
 
         int getRemainingTime() const;
     
     private:
         TrafficLightState state;
-
-        void tick(int time);
         void setState(TrafficLightState newState);
 
         int remainingLightTime;
-        int remainingPedestrianTime;
-
         int redLightTime;
         int yellowLightTime;
         int greenLightTime;
-        int pedestrianTime;
 
         bool pedestrianButtonPressed;
         bool isFault;

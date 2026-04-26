@@ -1,4 +1,6 @@
-// src/TrafficLightEvent.cpp
+// src/TrafficLightEvent.h
+
+#pragma once
 
 enum class TrafficLightEvent {
   TIMER_EXPIRED,

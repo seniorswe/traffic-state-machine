@@ -1,21 +1,17 @@
-// src/TrafficLightController.h
+// src/TrafficLightController.cpp
 
 #include "TrafficLightController.h"
 
 TrafficLightController::TrafficLightController()
     :   state(TrafficLightState::RED),
-        remainingLightTime(0),
-        remainingPedestrianTime(0),
-        redLightTime(60),
-        yellowLightTime(5),
-        greenLightTime(120),
-        pedestrianTime(20),
+        remainingLightTime(TrafficConstants::RED_TIME),
+        redLightTime(TrafficConstants::RED_TIME),
+        yellowLightTime(TrafficConstants::YELLOW_TIME),
+        greenLightTime(TrafficConstants::GREEN_TIME),
         pedestrianButtonPressed(false),
         isFault(false) {
             setState(TrafficLightState::RED);
         }
-
-// Public Methods
 
 int TrafficLightController::getRemainingTime() const {
     return remainingLightTime;
@@ -40,7 +36,7 @@ void TrafficLightController::processEvent(TrafficLightEvent event) {
 
     if (event == TrafficLightEvent::PEDESTRIAN_BUTTON_PRESSED) {
         if (state == TrafficLightState::GREEN && !pedestrianButtonPressed) {
-            tick(30);
+            tick(TrafficConstants::PEDESTRIAN_REDUCTION);
         }
         pedestrianButtonPressed = true;
         return;
@@ -64,23 +60,6 @@ void TrafficLightController::processEvent(TrafficLightEvent event) {
     }
 }
 
-// Private Methods
-
-void TrafficLightController::setState(TrafficLightState newState) {
-    state = newState;
-
-    if (state == TrafficLightState::RED) {
-        remainingPedestrianTime = pedestrianTime;
-        remainingLightTime = redLightTime;
-    } else if (state == TrafficLightState::YELLOW) {
-        remainingLightTime = yellowLightTime;
-    } else if (state == TrafficLightState::GREEN) {
-        remainingLightTime = greenLightTime;
-    } else if (state == TrafficLightState::ERROR) {
-        remainingLightTime = 0;
-    }
-}
-
 void TrafficLightController::tick(int time = 0) {
     if (isFault) {
         return;
@@ -91,8 +70,18 @@ void TrafficLightController::tick(int time = 0) {
     if (remainingLightTime <= 0) {
         processEvent(TrafficLightEvent::TIMER_EXPIRED);
     }
+}
 
-    if (pedestrianTime > 0) {
-        remainingPedestrianTime -= time;
+void TrafficLightController::setState(TrafficLightState newState) {
+    state = newState;
+
+    if (state == TrafficLightState::RED) {
+        remainingLightTime = redLightTime;
+    } else if (state == TrafficLightState::YELLOW) {
+        remainingLightTime = yellowLightTime;
+    } else if (state == TrafficLightState::GREEN) {
+        remainingLightTime = greenLightTime;
+    } else if (state == TrafficLightState::ERROR) {
+        remainingLightTime = 0;
     }
 }
