@@ -40,7 +40,6 @@ void TrafficLightController::processEvent(TrafficLightEvent event) {
     }
 
     if (event == TrafficLightEvent::PEDESTRIAN_BUTTON_PRESSED) {
-        logger.info("Pedestrian button pressed");
         if (state == TrafficLightState::GREEN && !pedestrianButtonPressed) {
             tick(TrafficConstants::PEDESTRIAN_REDUCTION);
             logger.info("Pedestrian time reduction triggered");
@@ -50,7 +49,6 @@ void TrafficLightController::processEvent(TrafficLightEvent event) {
     }
 
     if (event == TrafficLightEvent::TIMER_EXPIRED) {
-        logger.info("Time has expired");
         pedestrianButtonPressed = false;
         switch (state) {
             case TrafficLightState::RED:
@@ -82,9 +80,6 @@ void TrafficLightController::tick(int time = 0) {
     if (remainingLightTime <= 0) {
         processEvent(TrafficLightEvent::TIMER_EXPIRED);
     }
-
-    logger.info("Current State: " + stateToString(getState()));
-    logger.info("Time Remaining: " + std::to_string(getRemainingTime()));
 }
 
 void TrafficLightController::setState(TrafficLightState newState) {
@@ -112,4 +107,6 @@ std::string TrafficLightController::stateToString(TrafficLightState state) {
         case TrafficLightState::ERROR:
             return "ERROR";
     }
+
+    return "UNKNOWN";
 }

@@ -4,6 +4,8 @@
 #include "TrafficLightEvent.h"
 #include "TrafficLightState.h"
 
+#include <string>
+
 namespace TrafficConstants {
     constexpr int RED_TIME = 60;
     constexpr int YELLOW_TIME = 5;
