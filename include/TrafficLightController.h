@@ -23,11 +23,12 @@ class TrafficLightController {
         void tick(int time);
 
         int getRemainingTime() const;
+        std::string getTimeStatus() const;
+        std::string stateToString(TrafficLightState currentState) const;
     
     private:
         TrafficLightState state;
         void setState(TrafficLightState newState);
-        std::string stateToString(TrafficLightState currentState);
 
         int remainingLightTime;
         int redLightTime;

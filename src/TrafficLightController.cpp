@@ -24,6 +24,11 @@ TrafficLightState TrafficLightController::getState() const {
     return state;
 }
 
+std::string TrafficLightController::getTimeStatus() const {
+    return "State: " + stateToString(state) +
+        " | Time remaining: " + std::to_string(remainingLightTime) + "s";
+}
+
 void TrafficLightController::processEvent(TrafficLightEvent event) {
     if (event == TrafficLightEvent::ERROR_ACTIVE) {
         logger.error("Event error");
@@ -58,6 +63,7 @@ void TrafficLightController::processEvent(TrafficLightEvent event) {
                 logger.info("Yellow to red light transition");
                 if (pedestrianButtonPressed) {
                     logger.info("Walk sign active");
+                    pedestrianButtonPressed = false;
                 }
                 setState(TrafficLightState::RED);
                 break;
@@ -69,7 +75,6 @@ void TrafficLightController::processEvent(TrafficLightEvent event) {
                 logger.error("Traffic light has entered an error state");
                 break;
         }
-        pedestrianButtonPressed = false;
     }
 }
 
@@ -99,7 +104,7 @@ void TrafficLightController::setState(TrafficLightState newState) {
     }
 }
 
-std::string TrafficLightController::stateToString(TrafficLightState state) {
+std::string TrafficLightController::stateToString(TrafficLightState state) const {
     switch (state) {
         case TrafficLightState::RED:
             return "RED";

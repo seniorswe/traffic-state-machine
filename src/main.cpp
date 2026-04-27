@@ -7,8 +7,9 @@
 #include <chrono>
 #include <thread>
 #include <atomic>
+#include <limits>
 
-void getUserInput(std::atomic<bool>& stopProgram, std::atomic<bool>& pedestrianRequestPending) {
+void getUserInput(std::atomic<bool>& stopProgram, std::atomic<bool>& getTimeStatus, std::atomic<bool>& pedestrianRequestPending) {
     while (!stopProgram.load()) {
         int input;
         
@@ -23,6 +24,9 @@ void getUserInput(std::atomic<bool>& stopProgram, std::atomic<bool>& pedestrianR
                 stopProgram.store(true);
                 break;
             case(1):
+                getTimeStatus.store(true);
+                break;
+            case(2):
                 pedestrianRequestPending.store(true);
                 break;
         }
@@ -34,11 +38,13 @@ int main() {
     TrafficLightController trafficController;
 
     std::atomic<bool> stopProgram{false};
+    std::atomic<bool> getTimeStatus{false};
     std::atomic<bool> pedestrianRequestPending{false};
 
     std::thread inputThread(
         getUserInput,
         std::ref(stopProgram),
+        std::ref(getTimeStatus),
         std::ref(pedestrianRequestPending)
     );
 
@@ -56,6 +62,10 @@ int main() {
     while (!stopProgram.load()) {
         std::this_thread::sleep_for(std::chrono::seconds(1));
         trafficController.tick(1);
+
+        if (getTimeStatus.exchange(false)) {
+            logger.info(trafficController.getTimeStatus());
+        }
 
         if (pedestrianRequestPending.exchange(false)) {
             logger.info("INFO | Pedestrian button manually triggered");
