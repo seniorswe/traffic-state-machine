@@ -49,7 +49,6 @@ void TrafficLightController::processEvent(TrafficLightEvent event) {
     }
 
     if (event == TrafficLightEvent::TIMER_EXPIRED) {
-        pedestrianButtonPressed = false;
         switch (state) {
             case TrafficLightState::RED:
                 logger.info("Red to green light transition");
@@ -57,6 +56,9 @@ void TrafficLightController::processEvent(TrafficLightEvent event) {
                 break;
             case TrafficLightState::YELLOW:
                 logger.info("Yellow to red light transition");
+                if (pedestrianButtonPressed) {
+                    logger.info("Walk sign active");
+                }
                 setState(TrafficLightState::RED);
                 break;
             case TrafficLightState::GREEN:
@@ -67,6 +69,7 @@ void TrafficLightController::processEvent(TrafficLightEvent event) {
                 logger.error("Traffic light has entered an error state");
                 break;
         }
+        pedestrianButtonPressed = false;
     }
 }
 
