@@ -53,6 +53,19 @@ void TrafficLightController::processEvent(TrafficLightEvent event) {
         return;
     }
 
+    if (event == TrafficLightEvent::EMERGENCY_VEHICLE_OVERRIDE) {
+        if (state == TrafficLightState::GREEN) {
+            logger.info("Override green light increased to 100%");
+            setState(TrafficLightState::GREEN);
+        } else if (state == TrafficLightState::YELLOW) {
+            logger.info("Override yellow light reduced by 20%");
+            remainingLightTime *= .8;
+        } else if (state == TrafficLightState::RED) {
+            logger.info("Override green light transition");
+            setState(TrafficLightState::GREEN);
+        }
+    }
+
     if (event == TrafficLightEvent::TIMER_EXPIRED) {
         switch (state) {
             case TrafficLightState::RED:
