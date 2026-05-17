@@ -9,7 +9,7 @@
 #include <atomic>
 #include <limits>
 
-void getUserInput(std::atomic<bool>& stopProgram, std::atomic<bool>& getTimeStatus, std::atomic<bool>& pedestrianRequestPending) {
+void getUserInput(std::atomic<bool>& stopProgram, std::atomic<bool>& getTimeStatus, std::atomic<bool>& pedestrianRequestPending, std::atomic<bool>& emergencyVehicleOverride) {
     while (!stopProgram.load()) {
         int input;
         
@@ -29,6 +29,9 @@ void getUserInput(std::atomic<bool>& stopProgram, std::atomic<bool>& getTimeStat
             case(2):
                 pedestrianRequestPending.store(true);
                 break;
+            case(3):
+                emergencyVehicleOverride.store(true);
+                break;
         }
     }
 }
@@ -40,12 +43,14 @@ int main() {
     std::atomic<bool> stopProgram{false};
     std::atomic<bool> getTimeStatus{false};
     std::atomic<bool> pedestrianRequestPending{false};
+    std::atomic<bool> emergencyVehicleOverride{false};
 
     std::thread inputThread(
         getUserInput,
         std::ref(stopProgram),
         std::ref(getTimeStatus),
-        std::ref(pedestrianRequestPending)
+        std::ref(pedestrianRequestPending),
+        std::ref(emergencyVehicleOverride)
     );
 
     logger.info(
@@ -54,6 +59,7 @@ int main() {
         "Enter 0 to stop the system \n"
         "Enter 1 for current state and time remaining. \n"
         "Enter 2 for pedestrian crosswalk. \n"
+        "Enter 3 for emergency vehicle. \n"
         "-------------------------------------------- \n"
         "Logs are live, input is expected below.. \n"
         "--------------------------------------------"
@@ -70,6 +76,11 @@ int main() {
         if (pedestrianRequestPending.exchange(false)) {
             logger.info("INFO | Pedestrian button manually triggered");
             trafficController.processEvent(TrafficLightEvent::PEDESTRIAN_BUTTON_PRESSED);
+        }
+
+        if (emergencyVehicleOverride.exchange(false)) {
+            logger.info("INFO | Emergency vehicle override triggered");
+            trafficController.processEvent(TrafficLightEvent::EMERGENCY_VEHICLE_OVERRIDE);
         }
     }
 
