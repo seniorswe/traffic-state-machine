@@ -3,8 +3,6 @@
 #include "Logger.h"
 #include "TrafficLightController.h"
 
-Logger logger;
-
 TrafficLightController::TrafficLightController()
     :   state(TrafficLightState::RED),
         remainingLightTime(TrafficConstants::RED_TIME),
@@ -30,6 +28,8 @@ std::string TrafficLightController::getTimeStatus() const {
 }
 
 void TrafficLightController::processEvent(TrafficLightEvent event) {
+    Logger logger;
+
     if (event == TrafficLightEvent::ERROR_ACTIVE) {
         logger.error("Event error");
         isFault = true;
@@ -57,11 +57,11 @@ void TrafficLightController::processEvent(TrafficLightEvent event) {
         if (state == TrafficLightState::GREEN) {
             logger.info("Override green light increased to 100%");
             setState(TrafficLightState::GREEN);
-        } else if (state == TrafficLightState::YELLOW) {
-            logger.info("Override yellow light reduced by 20%");
-            remainingLightTime *= .8;
         } else if (state == TrafficLightState::RED) {
             logger.info("Override green light transition");
+            setState(TrafficLightState::GREEN);
+        } else if (state == TrafficLightState::YELLOW) {
+            logger.info("Override green light transition from yellow");
             setState(TrafficLightState::GREEN);
         }
     }
